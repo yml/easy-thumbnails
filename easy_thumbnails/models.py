@@ -10,10 +10,17 @@ class StorageManager(models.Manager):
     def get_storage(self, storage):
         pickled = pickle.dumps(storage)
         hash = utils.get_storage_hash(pickled)
-        if hash not in self._storage_cache:
-            self._storage_cache[hash] = self.get_or_create(hash=hash,
-                                            defaults=dict(pickle=pickled))[0]
-        return self._storage_cache[hash]
+        # Fix this buggy optimisation
+        # the issue is that _storage_cache is not up to date in
+        # some circonstances
+        
+        #if hash not in self._storage_cache:
+        #    self._storage_cache[hash] = self.get_or_create(hash=hash,
+        #                                    defaults=dict(pickle=pickled))[0]
+        #return self._storage_cache[hash]
+        
+        return self.get_or_create(hash=hash,
+                                  defaults=dict(pickle=pickled))[0]
 
 
 class FileManager(models.Manager):
